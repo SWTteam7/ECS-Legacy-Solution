@@ -1,21 +1,27 @@
-﻿namespace ECS.Legacy
+﻿using System;
+
+namespace ECS.Legacy
 {
     public class ECS
     {
         private int _threshold;
-        private readonly TempSensor _tempSensor;
-        private readonly Heater _heater;
+        private readonly ITempSensor _tempSensor;
+        private readonly IHeater _heater;
 
-        public ECS(int thr)
+        public ECS(int thr, ITempSensor tempSensor, IHeater heater)
         {
             SetThreshold(thr);
-            _tempSensor = new TempSensor();
-            _heater = new Heater();
+           _tempSensor = tempSensor;
+           _heater = heater;
         }
 
         public void Regulate()
         {
             var t = _tempSensor.GetTemp();
+           if (t < 0)
+           {
+              throw new ArgumentException("Det kan ikke passe");
+           }
             if (t < _threshold)
                 _heater.TurnOn();
             else
